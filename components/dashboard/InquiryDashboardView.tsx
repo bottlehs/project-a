@@ -231,6 +231,12 @@ function InquiryDashboardContent() {
     total: number;
     error: string | null;
   }>({ category: null, items: [], total: 0, error: null });
+  const [company, setCompany] = useState("");
+  const [inquiryType, setInquiryType] = useState("");
+  const [owner, setOwner] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionError, setSubmissionError] = useState(false);
+  const [refreshVersion, setRefreshVersion] = useState(0);
   const loading = inquiryResult.category !== selectedCategory;
   const apiInquiries = loading ? [] : inquiryResult.items;
   const apiTotal = loading ? 0 : inquiryResult.total;
@@ -288,7 +294,35 @@ function InquiryDashboardContent() {
       });
 
     return () => controller.abort();
-  }, [selectedCategory]);
+  }, [refreshVersion, selectedCategory]);
+
+  const submitInquiry = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsSubmitting(true);
+    setSubmissionError(false);
+
+    try {
+      const response = await fetch("/api/inquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ company, type: inquiryType, owner }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`문의 등록 요청 실패: ${response.status}`);
+      }
+
+      setCompany("");
+      setInquiryType("");
+      setOwner("");
+      setRefreshVersion((version) => version + 1);
+    } catch (cause) {
+      console.error("문의를 등록하지 못했습니다.", cause);
+      setSubmissionError(true);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const selectCategory = (category: (typeof inquiryCategories)[number]) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -409,6 +443,70 @@ function InquiryDashboardContent() {
               );
             })}
           </div>
+        </section>
+
+        <section
+          aria-labelledby="inquiry-create-title"
+          className="rounded-2xl border border-line bg-cream p-5 md:p-6"
+        >
+          <h2 className="mb-4 text-lg font-bold text-ink" id="inquiry-create-title">
+            문의 등록
+          </h2>
+          <form
+            className="grid grid-cols-1 gap-3 md:grid-cols-[1fr_1fr_1fr_auto] md:items-end"
+            onSubmit={submitInquiry}
+          >
+            <label className="grid gap-2 text-sm font-medium text-ink">
+              회사명
+              <input
+                className="min-w-0 rounded-lg border border-line bg-white px-3 py-2.5 font-normal outline-none focus-visible:border-ink focus-visible:ring-2 focus-visible:ring-main"
+                maxLength={50}
+                onChange={(event) => setCompany(event.target.value)}
+                required
+                value={company}
+              />
+            </label>
+            <label className="grid gap-2 text-sm font-medium text-ink">
+              분류
+              <select
+                className="min-w-0 rounded-lg border border-line bg-white px-3 py-2.5 font-normal outline-none focus-visible:border-ink focus-visible:ring-2 focus-visible:ring-main"
+                onChange={(event) => setInquiryType(event.target.value)}
+                required
+                value={inquiryType}
+              >
+                <option disabled value="">
+                  분류 선택
+                </option>
+                {validCategories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="grid gap-2 text-sm font-medium text-ink">
+              담당자
+              <input
+                className="min-w-0 rounded-lg border border-line bg-white px-3 py-2.5 font-normal outline-none focus-visible:border-ink focus-visible:ring-2 focus-visible:ring-main"
+                maxLength={50}
+                onChange={(event) => setOwner(event.target.value)}
+                required
+                value={owner}
+              />
+            </label>
+            <button
+              className="rounded-lg bg-ink px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-main disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={isSubmitting}
+              type="submit"
+            >
+              {isSubmitting ? "저장 중 ..." : "등록"}
+            </button>
+          </form>
+          {submissionError && (
+            <p aria-live="polite" className="mt-3 text-sm text-main" role="alert">
+              저장하지 못했습니다
+            </p>
+          )}
         </section>
 
         <section
