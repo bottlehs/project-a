@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+@theme {
+  --color-main: #e8836b;
+  --color-main-dark: #1f47e0;
+  --color-ink: #111111;
+  --color-sub: #5a5a5a;
+  --color-line: #e3e3e3;
+  --color-cream: #f6f5f2;
+  --color-dark: #151515;
+  --color-soft: #eaf0ff;
+
+  --text-display: 56px;
+  --text-display-sm: 34px;
+  --text-title: 40px;
+  --text-title-sm: 28px;
+  --text-card: 22px;
+  --text-btn: 15px;
+
+  --tracking-eyebrow: 0.12em;
+
+  --spacing-section: 120px;
+  --spacing-section-sm: 72px;
+  --spacing-band: 100px;
+
+  --container-content: 1200px;
+
+  --radius-card: 12px;
+  --radius-media: 16px;
+  --radius-hero: 24px;
+
+  --font-sans: "Pretendard", sans-serif;
+}
+
+body {
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  word-break: keep-all;
+}
+
+[data-reveal] {
+  transition:
+    opacity 0.5s ease-out,
+    transform 0.5s ease-out;
+}
+
+[data-reveal-ready="true"][data-reveal-visible="false"] {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+.portfolio-card {
+  transition: transform 0.2s ease-out;
+}
+
+.portfolio-card__art {
+  display: flex;
+  aspect-ratio: 16 / 10;
+  align-items: flex-end;
+  overflow: hidden;
+  padding: 1.5rem;
+  transition: transform 0.2s ease-out;
+}
+
+.portfolio-card__art span {
+  color: rgb(17 17 17 / 55%);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.portfolio-card__art--branding {
+  background:
+    radial-gradient(ellipse at 70% 40%, #ffe1d2 0 15%, transparent 15.5%),
+    radial-gradient(ellipse at 65% 45%, #e8836b 0 30%, transparent 30.5%),
+    linear-gradient(135deg, #f8eee5, #eaf0ff);
+}
+
+.portfolio-card__art--web {
+  background:
+    linear-gradient(145deg, transparent 48%, rgb(255 255 255 / 55%) 48.5% 52%, transparent 52.5%),
+    radial-gradient(ellipse at 75% 35%, #f6c4a8 0 16%, transparent 16.5%),
+    linear-gradient(135deg, #dce7ff, #f2e9df 58%, #b9c9f8);
+}
+
+.portfolio-card__art--dashboard {
+  background:
+    linear-gradient(90deg, transparent 15%, rgb(255 255 255 / 70%) 15% 16%, transparent 16% 40%, rgb(255 255 255 / 70%) 40% 41%, transparent 41%),
+    linear-gradient(0deg, transparent 25%, rgb(255 255 255 / 70%) 25% 26%, transparent 26% 62%, rgb(255 255 255 / 70%) 62% 63%, transparent 63%),
+    linear-gradient(135deg, #d9e3ff, #f0cbb9);
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .portfolio-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .portfolio-card:hover .portfolio-card__art {
+    transform: scale(1.05);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .portfolio-card,
+  .portfolio-card__art {
+    transition: none;
+  }
+}
